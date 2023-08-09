@@ -246,7 +246,6 @@ namespace Divine
     {
         VkFormat depthFormat = FindDepthFormat();
         m_SwapChainDepthFormat = depthFormat;
-        VkExtent2D SwapChainImageExtent = m_SwapChainImageExtent;
 
         m_DepthImages.resize(m_SwapChainImages.size());
         m_DepthImageMemories.resize(m_SwapChainImages.size());

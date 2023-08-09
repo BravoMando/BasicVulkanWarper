@@ -21,7 +21,7 @@ namespace Divine
         auto smooth = DivineGameObject::CreateGameObject();
         smooth.sp_Model = model;
         smooth.m_ModelMatrix.translation = {-0.25f, 0.0f, 2.5f};
-        smooth.m_ModelMatrix.scale = {1.0f, 0.5f, 1.0f};
+        smooth.m_ModelMatrix.scale = {1.0f, 1.0f, 1.0f};
         m_GameObjects.push_back(std::move(smooth));
 
         model = Model::CreateModelFromFile(m_Device, HOME_DIR "res/models/flat_vase.obj");

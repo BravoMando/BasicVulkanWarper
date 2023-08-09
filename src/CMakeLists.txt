@@ -32,6 +32,14 @@ add_custom_target(BuildShader
                 COMMAND glslc basic_vert.vert -o basic_vert.spv
                 COMMAND glslc basic_frag.frag -o basic_frag.spv)
 
+set(CMAKE_CXX_STANDARD 17)
+
+if(MSVC)
+    set(CMAKE_CXX_FLAGS "/Zi /W3")
+else()
+    set(CMAKE_CXX_FLAGS "-g -Wall")
+endif()
+
 add_executable(${PROJECT_NAME} ${SRC_LIST})
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE HOME_DIR="${PROJECT_SOURCE_DIR}/")
