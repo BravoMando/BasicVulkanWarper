@@ -1,0 +1,6 @@
+# directories
+.vscode
+build
+
+# files
+res/shaders/*.spv
