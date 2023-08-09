@@ -27,7 +27,7 @@ If the repository was cloned non-recursively, use the following commands to clon
 ```
 ### Configure the dependencies
 
-+ Window
++ Windows
     + Run the [Build.bat](./Build.bat). It should automatically build the project with CMake based on your C/C++ compiler.
 + Ubuntu
     + Enter the [project root directory](./), open a terminal and type in the following commands to add permission.
