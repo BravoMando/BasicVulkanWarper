@@ -13,6 +13,12 @@
 
 namespace Divine
 {
+    struct GlobalUBO
+    {
+        glm::mat4 ProjectionView{1.0f};
+        glm::vec3 LightDirection = glm::normalize(glm::vec3(1.0f, -3.0f, -1.0));
+    };
+
     class App
     {
     public:

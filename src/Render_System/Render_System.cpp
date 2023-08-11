@@ -6,12 +6,6 @@
 
 namespace Divine
 {
-    struct PushConstantData
-    {
-        glm::mat4 transform{1.0f};
-        glm::mat4 normalMatrix{1.0f};
-    };
-
     RenderSystem::RenderSystem(Device &device, VkRenderPass renderPass)
         : r_Device{device}
     {
@@ -58,32 +52,26 @@ namespace Divine
             configInfo);
     }
 
-    void RenderSystem::RenderGameObjects(
-        VkCommandBuffer commandBuffer,
-        std::vector<DivineGameObject> &gameObjects,
-        const Camera &camera)
+    void RenderSystem::RenderGameObjects(FrameInfo &frameInfo, std::vector<DivineGameObject> &gameObjects)
     {
-        up_Pipeline->Bind(commandBuffer);
+        up_Pipeline->Bind(frameInfo.commandBuffer);
 
         for (auto &obj : gameObjects)
         {
-            // obj.m_ModelMatrix.rotation.y = glm::mod(obj.m_ModelMatrix.rotation.y + 0.01f, glm::two_pi<float>());
-            // obj.m_ModelMatrix.rotation.x = glm::mod(obj.m_ModelMatrix.rotation.x + 0.005f, glm::two_pi<float>());
-
             PushConstantData push{};
             push.normalMatrix = obj.m_ModelMatrix.GetNormalMat();
-            push.transform = camera.GetProjectionMat() * camera.GetViewMat() * obj.m_ModelMatrix.GetModelMat(); // MVP matrix
+            push.transform = frameInfo.camera.GetProjectionMat() * frameInfo.camera.GetViewMat() * obj.m_ModelMatrix.GetModelMat(); // MVP matrix
 
             vkCmdPushConstants(
-                commandBuffer,
+                frameInfo.commandBuffer,
                 m_PipelineLayout,
                 VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
                 0,
                 static_cast<uint32_t>(sizeof(PushConstantData)),
                 &push);
 
-            obj.sp_Model->Bind(commandBuffer);
-            obj.sp_Model->Draw(commandBuffer);
+            obj.sp_Model->Bind(frameInfo.commandBuffer);
+            obj.sp_Model->Draw(frameInfo.commandBuffer);
         }
     }
 

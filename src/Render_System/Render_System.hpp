@@ -4,12 +4,18 @@
 #include "Device.hpp"
 #include "Pipeline.hpp"
 #include "Game_Object.hpp"
-#include "Camera.hpp"
+#include "FrameInfo.hpp"
 
 #include <memory>
 
 namespace Divine
 {
+    struct PushConstantData
+    {
+        glm::mat4 transform{1.0f};
+        glm::mat4 normalMatrix{1.0f};
+    };
+
     class RenderSystem
     {
     public:
@@ -18,10 +24,7 @@ namespace Divine
         RenderSystem(const RenderSystem &) = delete;
         RenderSystem &operator=(const RenderSystem &) = delete;
 
-        void RenderGameObjects(
-            VkCommandBuffer commandBuffer,
-            std::vector<DivineGameObject> &gameObjects,
-            const Camera &camera);
+        void RenderGameObjects(FrameInfo &frameInfo, std::vector<DivineGameObject> &gameObjects);
 
     private:
         void CreatePipelineLayout();

@@ -103,6 +103,8 @@ namespace Divine
             VkDebugUtilsMessageTypeFlagsEXT messageType,
             const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
             void *pUserData);
+
+        VkPhysicalDeviceProperties m_DeviceProperties;
     };
 }
 

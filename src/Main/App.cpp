@@ -34,6 +34,17 @@ namespace Divine
 
     void App::run()
     {
+        std::vector<std::unique_ptr<Buffer>> ubos(SwapChain::MAX_FRAMES_IN_FLIGHT);
+        for (size_t i = 0; i < ubos.size(); ++i)
+        {
+            ubos[i] = std::make_unique<Buffer>(m_Device,
+                                               sizeof(GlobalUBO),
+                                               1,
+                                               VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                                               VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+            ubos[i]->Map();
+        }
+
         RenderSystem renderSystem{m_Device, m_Renderer.GetSwapChainRenderPass()};
         Camera camera{};
         // camera.SetViewDirection({ 0.0f,0.0f,0.0f }, { 0.5f,00.1f,1.0f });
@@ -62,8 +73,18 @@ namespace Divine
 
             if (auto commandBuffer = m_Renderer.BeginFrame()) // it may return a null pointer
             {
+                auto frameIndex = m_Renderer.GetFrameIndex();
+                FrameInfo frameInfo{frameIndex, frameTime, commandBuffer, camera};
+
+                // update
+                GlobalUBO ubo{};
+                ubo.ProjectionView = camera.GetProjectionMat() * camera.GetViewMat();
+                ubos[frameIndex]->WriteToBuffer(reinterpret_cast<const void *>(&ubo));
+                ubos[frameIndex]->Flush();
+
+                // render
                 m_Renderer.BeginSwapChainRenderPass(commandBuffer);
-                renderSystem.RenderGameObjects(commandBuffer, m_GameObjects, camera);
+                renderSystem.RenderGameObjects(frameInfo, m_GameObjects);
                 m_Renderer.EndSwapChainRenderPass(commandBuffer);
                 m_Renderer.EndFrame();
             }

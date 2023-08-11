@@ -183,7 +183,7 @@ namespace Divine
             if (IsDeviceSuitable(device))
             {
                 std::cout << "\tUse GPU: " << properties.deviceName << std::endl;
-
+                m_DeviceProperties = properties;
                 m_PhysicalDevice = device;
                 break;
             }

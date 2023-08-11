@@ -2,6 +2,7 @@
 #define MODEL_HEADER
 
 #include "Device.hpp"
+#include "Buffer.hpp"
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -59,13 +60,11 @@ namespace Divine
     private:
         Device &r_Device;
 
-        VkBuffer m_VertexBuffer;
-        VkDeviceMemory m_VertexBufferMemory;
+        std::unique_ptr<Buffer> up_VertexBuffer{};
         uint32_t m_VertexCount;
 
         bool m_HasIndexBuffer = false;
-        VkBuffer m_IndexBuffer;
-        VkDeviceMemory m_IndexBufferMemory;
+        std::unique_ptr<Buffer> up_IndexBuffer{};
         uint32_t m_IndexCount;
     };
 
