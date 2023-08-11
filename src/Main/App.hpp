@@ -8,6 +8,7 @@
 #include "Render_System.hpp"
 #include "Camera.hpp"
 #include "Keyboard_Controller.hpp"
+#include "Descriptors.hpp"
 
 #include <memory>
 
@@ -40,6 +41,7 @@ namespace Divine
         Window m_Window{m_Width, m_Height, "Vulkan Warper"};
         Device m_Device{m_Window};
         Renderer m_Renderer{m_Window, m_Device};
+        std::unique_ptr<DescriptorPool> up_GlobalPool{};
         std::vector<DivineGameObject> m_GameObjects;
     };
 }

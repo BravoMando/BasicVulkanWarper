@@ -9,6 +9,10 @@ namespace Divine
 {
     App::App()
     {
+        up_GlobalPool = DescriptorPool::Builder(m_Device)
+                            .SetMaxSets(SwapChain::MAX_FRAMES_IN_FLIGHT)
+                            .AddPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, SwapChain::MAX_FRAMES_IN_FLIGHT)
+                            .Build();
         LoadGameObjects();
     }
 
@@ -45,7 +49,20 @@ namespace Divine
             ubos[i]->Map();
         }
 
-        RenderSystem renderSystem{m_Device, m_Renderer.GetSwapChainRenderPass()};
+        auto globalSetLayout = DescriptorSetLayout::Builder(m_Device)
+                                   .AddBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+                                   .Build();
+
+        std::vector<VkDescriptorSet> globalDescriptorSets(SwapChain::MAX_FRAMES_IN_FLIGHT);
+        for (int i = 0; i < globalDescriptorSets.size(); ++i)
+        {
+            auto bufferInfo = ubos[i]->GetDescriptorBufferInfo();
+            DescriptorWriter(*globalSetLayout, *up_GlobalPool)
+                .WriteBuffer(0, &bufferInfo)
+                .Build(globalDescriptorSets[i]);
+        }
+
+        RenderSystem renderSystem{m_Device, m_Renderer.GetSwapChainRenderPass(), globalSetLayout->GetDescriptorSetLayout()};
         Camera camera{};
         // camera.SetViewDirection({ 0.0f,0.0f,0.0f }, { 0.5f,00.1f,1.0f });
         // camera.SetViewTarget({-0.5f, -2.0f, -2.0f}, {0.0f, 0.0f, 2.5f});
@@ -74,7 +91,7 @@ namespace Divine
             if (auto commandBuffer = m_Renderer.BeginFrame()) // it may return a null pointer
             {
                 auto frameIndex = m_Renderer.GetFrameIndex();
-                FrameInfo frameInfo{frameIndex, frameTime, commandBuffer, camera};
+                FrameInfo frameInfo{frameIndex, frameTime, commandBuffer, camera, globalDescriptorSets[frameIndex]};
 
                 // update
                 GlobalUBO ubo{};

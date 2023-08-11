@@ -12,14 +12,14 @@ namespace Divine
 {
     struct PushConstantData
     {
-        glm::mat4 transform{1.0f};
+        glm::mat4 modelMatrix{1.0f};
         glm::mat4 normalMatrix{1.0f};
     };
 
     class RenderSystem
     {
     public:
-        RenderSystem(Device &device, VkRenderPass renderPass);
+        RenderSystem(Device &device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout);
         ~RenderSystem();
         RenderSystem(const RenderSystem &) = delete;
         RenderSystem &operator=(const RenderSystem &) = delete;
@@ -27,7 +27,7 @@ namespace Divine
         void RenderGameObjects(FrameInfo &frameInfo, std::vector<DivineGameObject> &gameObjects);
 
     private:
-        void CreatePipelineLayout();
+        void CreatePipelineLayout(VkDescriptorSetLayout globalSetLayout);
         void CreatePipeline(VkRenderPass renderPass);
 
     private:

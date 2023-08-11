@@ -168,7 +168,7 @@ namespace Divine
      *
      * @return VkDescriptorBufferInfo of specified offset and range
      */
-    VkDescriptorBufferInfo Buffer::DescriptorBufferInfo(VkDeviceSize size, VkDeviceSize offset)
+    VkDescriptorBufferInfo Buffer::GetDescriptorBufferInfo(VkDeviceSize size, VkDeviceSize offset)
     {
         return VkDescriptorBufferInfo{m_Buffer, offset, size};
     }
@@ -180,9 +180,9 @@ namespace Divine
      *
      * @return VkDescriptorBufferInfo for instance at index
      */
-    VkDescriptorBufferInfo Buffer::DescriptorBufferInfoForIndex(int index)
+    VkDescriptorBufferInfo Buffer::GetDescriptorBufferInfoForIndex(int index)
     {
-        return DescriptorBufferInfo(m_AlignmentSize, index * m_AlignmentSize);
+        return GetDescriptorBufferInfo(m_AlignmentSize, index * m_AlignmentSize);
     }
 
 }

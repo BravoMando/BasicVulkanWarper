@@ -25,6 +25,7 @@ include_directories(../deps/glfw/include
                     ../deps/tinyobjloader
                     Utils
                     Buffer
+                    Descriptor
                     ${VulkanSDK_Include_Dir})
 
 add_custom_target(BuildShader

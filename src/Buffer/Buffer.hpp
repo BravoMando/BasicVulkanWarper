@@ -37,8 +37,8 @@ namespace Divine
         VkResult FlushIndex(int index);
         VkResult InvalidateIndex(int index);
 
-        VkDescriptorBufferInfo DescriptorBufferInfo(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
-        VkDescriptorBufferInfo DescriptorBufferInfoForIndex(int index);
+        VkDescriptorBufferInfo GetDescriptorBufferInfo(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
+        VkDescriptorBufferInfo GetDescriptorBufferInfoForIndex(int index);
 
     private:
         Device &r_Device;

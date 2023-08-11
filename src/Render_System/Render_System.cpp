@@ -6,10 +6,10 @@
 
 namespace Divine
 {
-    RenderSystem::RenderSystem(Device &device, VkRenderPass renderPass)
+    RenderSystem::RenderSystem(Device &device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout)
         : r_Device{device}
     {
-        CreatePipelineLayout();
+        CreatePipelineLayout(globalSetLayout);
         CreatePipeline(renderPass);
     }
 
@@ -18,17 +18,19 @@ namespace Divine
         vkDestroyPipelineLayout(r_Device.GetDevice(), m_PipelineLayout, nullptr);
     }
 
-    void RenderSystem::CreatePipelineLayout()
+    void RenderSystem::CreatePipelineLayout(VkDescriptorSetLayout globalSetLayout)
     {
         VkPushConstantRange pushConstantRange{};
         pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
         pushConstantRange.offset = 0;
         pushConstantRange.size = sizeof(PushConstantData);
 
+        std::vector<VkDescriptorSetLayout> descriptorSetLayouts = {globalSetLayout};
+
         VkPipelineLayoutCreateInfo layoutInfo{};
         layoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        layoutInfo.setLayoutCount = 0;
-        layoutInfo.pSetLayouts = nullptr;
+        layoutInfo.setLayoutCount = static_cast<uint32_t>(descriptorSetLayouts.size());
+        layoutInfo.pSetLayouts = descriptorSetLayouts.data();
         layoutInfo.pushConstantRangeCount = 1;
         layoutInfo.pPushConstantRanges = &pushConstantRange;
 
@@ -56,11 +58,21 @@ namespace Divine
     {
         up_Pipeline->Bind(frameInfo.commandBuffer);
 
+        vkCmdBindDescriptorSets(
+            frameInfo.commandBuffer,
+            VK_PIPELINE_BIND_POINT_GRAPHICS,
+            m_PipelineLayout,
+            0,
+            1,
+            &frameInfo.globalDescriptorSet,
+            0,
+            nullptr);
+
         for (auto &obj : gameObjects)
         {
             PushConstantData push{};
             push.normalMatrix = obj.m_ModelMatrix.GetNormalMat();
-            push.transform = frameInfo.camera.GetProjectionMat() * frameInfo.camera.GetViewMat() * obj.m_ModelMatrix.GetModelMat(); // MVP matrix
+            push.modelMatrix = obj.m_ModelMatrix.GetModelMat();
 
             vkCmdPushConstants(
                 frameInfo.commandBuffer,
