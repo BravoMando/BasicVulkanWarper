@@ -17,6 +17,7 @@ namespace Divine
         {
         public:
             Builder(Device &device) : r_Device{device} {}
+            ~Builder() {}
 
             Builder &AddBinding(
                 uint32_t binding,
@@ -53,6 +54,7 @@ namespace Divine
         {
         public:
             Builder(Device &device) : r_Device{device} {}
+            ~Builder() {}
 
             Builder &AddPoolSize(VkDescriptorType descriptorType, uint32_t count);
             Builder &SetPoolFlags(VkDescriptorPoolCreateFlags flags);
