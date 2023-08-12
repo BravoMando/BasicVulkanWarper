@@ -17,7 +17,9 @@ namespace Divine
     struct GlobalUBO
     {
         glm::mat4 ProjectionView{1.0f};
-        glm::vec3 LightDirection = glm::normalize(glm::vec3(1.0f, -3.0f, -1.0));
+        glm::vec4 AmbientLightColor{1.0f, 1.0f, 1.0f, 0.02f}; // w is indtensity
+        glm::vec3 LightPosition{-1.0f};
+        alignas(16) glm::vec4 LightColor{1.0f}; // w is intensity
     };
 
     class App
@@ -42,7 +44,7 @@ namespace Divine
         Device m_Device{m_Window};
         Renderer m_Renderer{m_Window, m_Device};
         std::unique_ptr<DescriptorPool> up_GlobalPool{};
-        std::vector<DivineGameObject> m_GameObjects;
+        DivineGameObject::Map m_GameObjects;
     };
 }
 

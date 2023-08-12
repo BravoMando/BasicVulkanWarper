@@ -54,7 +54,7 @@ namespace Divine
             configInfo);
     }
 
-    void RenderSystem::RenderGameObjects(FrameInfo &frameInfo, std::vector<DivineGameObject> &gameObjects)
+    void RenderSystem::RenderGameObjects(FrameInfo &frameInfo)
     {
         up_Pipeline->Bind(frameInfo.commandBuffer);
 
@@ -68,8 +68,10 @@ namespace Divine
             0,
             nullptr);
 
-        for (auto &obj : gameObjects)
+        for (auto &kv : frameInfo.gameObjects)
         {
+            auto &obj = kv.second;
+
             PushConstantData push{};
             push.normalMatrix = obj.m_ModelMatrix.GetNormalMat();
             push.modelMatrix = obj.m_ModelMatrix.GetModelMat();

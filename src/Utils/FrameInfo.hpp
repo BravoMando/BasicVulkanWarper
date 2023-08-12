@@ -2,6 +2,8 @@
 #define FRAMEINFO_HEADER
 
 #include "Camera.hpp"
+#include "Game_Object.hpp"
+
 #include <vulkan/vulkan.h>
 
 namespace Divine
@@ -13,6 +15,7 @@ namespace Divine
         VkCommandBuffer commandBuffer;
         Camera &camera;
         VkDescriptorSet globalDescriptorSet;
+        DivineGameObject::Map &gameObjects;
     };
 
 }

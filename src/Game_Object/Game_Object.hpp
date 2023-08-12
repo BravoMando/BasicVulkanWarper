@@ -4,6 +4,7 @@
 #include "Model.hpp"
 
 #include <memory>
+#include <unordered_map>
 
 namespace Divine
 {
@@ -23,7 +24,8 @@ namespace Divine
     class DivineGameObject
     {
     public:
-        typedef unsigned int id_t;
+        using id_t = unsigned int;
+        using Map = std::unordered_map<id_t, DivineGameObject>;
 
         // can't copyable
         DivineGameObject(const DivineGameObject &) = delete;

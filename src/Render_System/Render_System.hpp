@@ -24,7 +24,7 @@ namespace Divine
         RenderSystem(const RenderSystem &) = delete;
         RenderSystem &operator=(const RenderSystem &) = delete;
 
-        void RenderGameObjects(FrameInfo &frameInfo, std::vector<DivineGameObject> &gameObjects);
+        void RenderGameObjects(FrameInfo &frameInfo);
 
     private:
         void CreatePipelineLayout(VkDescriptorSetLayout globalSetLayout);

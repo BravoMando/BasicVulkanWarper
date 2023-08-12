@@ -24,16 +24,23 @@ namespace Divine
 
         auto smooth = DivineGameObject::CreateGameObject();
         smooth.sp_Model = model;
-        smooth.m_ModelMatrix.translation = {-0.25f, 0.0f, 2.5f};
+        smooth.m_ModelMatrix.translation = {-0.5f, 0.0f, 0.0f};
         smooth.m_ModelMatrix.scale = {1.0f, 1.0f, 1.0f};
-        m_GameObjects.push_back(std::move(smooth));
+        m_GameObjects.emplace(smooth.GetID(), std::move(smooth));
 
         model = Model::CreateModelFromFile(m_Device, HOME_DIR "res/models/flat_vase.obj");
         auto flat = DivineGameObject::CreateGameObject();
         flat.sp_Model = model;
-        flat.m_ModelMatrix.translation = {0.25f, 0.0f, 2.5f};
+        flat.m_ModelMatrix.translation = {0.5f, 0.0f, 0.0f};
         flat.m_ModelMatrix.scale = {1.0f, 1.0f, 1.0f};
-        m_GameObjects.push_back(std::move(flat));
+        m_GameObjects.emplace(flat.GetID(), std::move(flat));
+
+        model = Model::CreateModelFromFile(m_Device, HOME_DIR "res/models/quad.obj");
+        auto quad = DivineGameObject::CreateGameObject();
+        quad.sp_Model = model;
+        quad.m_ModelMatrix.translation = {0.0f, 0.0f, 0.0f};
+        quad.m_ModelMatrix.scale = {3.0f, 1.0f, 3.0f};
+        m_GameObjects.emplace(quad.GetID(), std::move(quad));
     }
 
     void App::run()
@@ -50,7 +57,7 @@ namespace Divine
         }
 
         auto globalSetLayout = DescriptorSetLayout::Builder(m_Device)
-                                   .AddBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+                                   .AddBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT)
                                    .Build();
 
         std::vector<VkDescriptorSet> globalDescriptorSets(SwapChain::MAX_FRAMES_IN_FLIGHT);
@@ -68,6 +75,9 @@ namespace Divine
         // camera.SetViewTarget({-0.5f, -2.0f, -2.0f}, {0.0f, 0.0f, 2.5f});
 
         auto viewerObject = DivineGameObject::CreateGameObject();
+        viewerObject.m_ModelMatrix.translation.y = -1.0f;
+        viewerObject.m_ModelMatrix.translation.z = -2.5f;
+        viewerObject.m_ModelMatrix.rotation.x = -0.2f;
         KeyboardController cameraController{};
 
         auto currentTime = std::chrono::high_resolution_clock::now();
@@ -91,7 +101,12 @@ namespace Divine
             if (auto commandBuffer = m_Renderer.BeginFrame()) // it may return a null pointer
             {
                 auto frameIndex = m_Renderer.GetFrameIndex();
-                FrameInfo frameInfo{frameIndex, frameTime, commandBuffer, camera, globalDescriptorSets[frameIndex]};
+                FrameInfo frameInfo{frameIndex,
+                                    frameTime,
+                                    commandBuffer,
+                                    camera,
+                                    globalDescriptorSets[frameIndex],
+                                    m_GameObjects};
 
                 // update
                 GlobalUBO ubo{};
@@ -101,7 +116,7 @@ namespace Divine
 
                 // render
                 m_Renderer.BeginSwapChainRenderPass(commandBuffer);
-                renderSystem.RenderGameObjects(frameInfo, m_GameObjects);
+                renderSystem.RenderGameObjects(frameInfo);
                 m_Renderer.EndSwapChainRenderPass(commandBuffer);
                 m_Renderer.EndFrame();
             }
