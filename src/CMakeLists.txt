@@ -28,11 +28,28 @@ include_directories(../deps/glfw/include
                     Descriptor
                     ${VulkanSDK_Include_Dir})
 
-add_custom_target(BuildShader
+file(GLOB_RECURSE
+    GLSL_SRC_LIST
+    ${PROJECT_SOURCE_DIR}/res/shaders/*.vert
+    ${PROJECT_SOURCE_DIR}/res/shaders/*.tesc
+    ${PROJECT_SOURCE_DIR}/res/shaders/*.tese
+    ${PROJECT_SOURCE_DIR}/res/shaders/*.geom
+    ${PROJECT_SOURCE_DIR}/res/shaders/*.frag
+    ${PROJECT_SOURCE_DIR}/res/shaders/*.comp)
+
+foreach(GLSL ${GLSL_SRC_LIST})
+    get_filename_component(FILE_NAME ${GLSL} NAME)
+    set(SPIRV ${PROJECT_SOURCE_DIR}/res/shaders/${FILE_NAME}.spv)
+    add_custom_command(OUTPUT ${SPIRV}
+                        PRE_BUILD
+                        COMMAND ${GLSLC} ${GLSL} -o ${SPIRV}
+                        DEPENDS ${GLSL})
+    list(APPEND SPIRV_BIN_LIST ${SPIRV})
+endforeach()
+
+add_custom_target(BUILD_SHADER
                 ALL
-                WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/res/shaders
-                COMMAND glslc basic_vert.vert -o basic_vert.spv
-                COMMAND glslc basic_frag.frag -o basic_frag.spv)
+                DEPENDS ${SPIRV_BIN_LIST})
 
 set(CMAKE_CXX_STANDARD 17)
 

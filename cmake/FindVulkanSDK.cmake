@@ -13,4 +13,8 @@ else()
     set(VulkanSDK_Libraries_Dir $ENV{VULKAN_SDK}/Lib)
     set(VulkanSDK_Runtime_Dir $ENV{VULKAN_SDK}/Bin)
 
+    find_program(GLSLC NAMES glslc glslc.exe
+                HINTS ${VulkanSDK_Runtime_Dir}
+                DOC "glslc program")
+
 endif()

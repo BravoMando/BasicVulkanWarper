@@ -49,8 +49,8 @@ namespace Divine
 
         up_Pipeline = std::make_unique<Pipeline>(
             r_Device,
-            HOME_DIR "res/shaders/basic_vert.spv",
-            HOME_DIR "res/shaders/basic_frag.spv",
+            HOME_DIR "res/shaders/basic_vert.vert.spv",
+            HOME_DIR "res/shaders/basic_frag.frag.spv",
             configInfo);
     }
 
