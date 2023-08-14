@@ -1,5 +1,5 @@
-#ifndef RenderSystem_HEADER
-#define RenderSystem_HEADER
+#ifndef RENDER_SYSTEM_HEADER
+#define RENDER_SYSTEM_HEADER
 
 #include "Device.hpp"
 #include "Pipeline.hpp"

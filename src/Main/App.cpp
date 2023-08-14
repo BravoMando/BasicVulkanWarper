@@ -69,7 +69,13 @@ namespace Divine
                 .Build(globalDescriptorSets[i]);
         }
 
-        RenderSystem renderSystem{m_Device, m_Renderer.GetSwapChainRenderPass(), globalSetLayout->GetDescriptorSetLayout()};
+        RenderSystem renderSystem{m_Device,
+                                  m_Renderer.GetSwapChainRenderPass(),
+                                  globalSetLayout->GetDescriptorSetLayout()};
+
+        PointLightSystem pointLightSystem{m_Device,
+                                  m_Renderer.GetSwapChainRenderPass(),
+                                  globalSetLayout->GetDescriptorSetLayout()};
         Camera camera{};
         // camera.SetViewDirection({ 0.0f,0.0f,0.0f }, { 0.5f,00.1f,1.0f });
         // camera.SetViewTarget({-0.5f, -2.0f, -2.0f}, {0.0f, 0.0f, 2.5f});
@@ -110,12 +116,14 @@ namespace Divine
 
                 // update
                 GlobalUBO ubo{};
-                ubo.ProjectionView = camera.GetProjectionMat() * camera.GetViewMat();
+                ubo.Projection = camera.GetProjectionMat();
+                ubo.View = camera.GetViewMat();
                 ubos[frameIndex]->WriteToBuffer(reinterpret_cast<const void *>(&ubo));
                 ubos[frameIndex]->Flush();
 
                 // render
                 m_Renderer.BeginSwapChainRenderPass(commandBuffer);
+                pointLightSystem.Render(frameInfo);
                 renderSystem.RenderGameObjects(frameInfo);
                 m_Renderer.EndSwapChainRenderPass(commandBuffer);
                 m_Renderer.EndFrame();

@@ -59,8 +59,9 @@ namespace Divine
         shaderStages[1].pNext = nullptr;
         shaderStages[1].pSpecializationInfo = nullptr;
 
-        auto bindingDescriptions = Model::Vertex::GetBindingDescriptions();
-        auto attributeDescriptions = Model::Vertex::GetAttributeDescriptions();
+        auto &bindingDescriptions = configInfo.bindingDescriptions;
+        auto &attributeDescriptions = configInfo.attributeDescriptions;
+
         VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
         vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
         vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
@@ -162,6 +163,9 @@ namespace Divine
         // configInfo.viewportInfo.pViewports = &configInfo.viewport;
         // configInfo.viewportInfo.scissorCount = 1;
         // configInfo.viewportInfo.pScissors = &configInfo.scissor;
+
+        configInfo.bindingDescriptions = Model::Vertex::GetBindingDescriptions();
+        configInfo.attributeDescriptions = Model::Vertex::GetAttributeDescriptions();
 
         configInfo.rasterizationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
         configInfo.rasterizationInfo.depthClampEnable = VK_FALSE;

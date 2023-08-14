@@ -8,7 +8,8 @@ layout (location = 0) out vec4 outColor;
 
 layout (set = 0, binding = 0) uniform GlobalUBO
 {
-    mat4 ProjectionView;
+    mat4 Projection;
+    mat4 View;
     vec4 AmbientLightColor; // w is indtensity
     vec3 LightPosition;
     vec4 LightColor; // w is intensity

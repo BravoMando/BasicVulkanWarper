@@ -17,6 +17,9 @@ namespace Divine
         // VkViewport viewport;
         // VkRect2D scissor;
         // VkPipelineViewportStateCreateInfo viewportInfo;
+        std::vector<VkVertexInputBindingDescription> bindingDescriptions{};
+        std::vector<VkVertexInputAttributeDescription> attributeDescriptions{};
+
         VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
         VkPipelineRasterizationStateCreateInfo rasterizationInfo;
         VkPipelineMultisampleStateCreateInfo multisampleInfo;

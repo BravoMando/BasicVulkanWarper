@@ -19,7 +19,7 @@ include_directories(../deps/glfw/include
                     Model
                     Game_Object
                     Renderer
-                    Render_System
+                    Systems
                     Camera
                     Input_Controller
                     ../deps/tinyobjloader
@@ -72,3 +72,4 @@ else()
 endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_NAME App)
+set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/build)
