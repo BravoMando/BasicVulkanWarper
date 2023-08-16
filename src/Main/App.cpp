@@ -24,23 +24,42 @@ namespace Divine
 
         auto smooth = DivineGameObject::CreateGameObject();
         smooth.sp_Model = model;
-        smooth.m_ModelMatrix.translation = {-0.5f, 0.0f, 0.0f};
-        smooth.m_ModelMatrix.scale = {1.0f, 1.0f, 1.0f};
+        smooth.m_ModelMatrix.translation = {-0.5f, 0.5f, 0.0f};
+        smooth.m_ModelMatrix.scale = {3.0f, 1.5f, 3.0f};
         m_GameObjects.emplace(smooth.GetID(), std::move(smooth));
 
         model = Model::CreateModelFromFile(m_Device, HOME_DIR "res/models/flat_vase.obj");
         auto flat = DivineGameObject::CreateGameObject();
         flat.sp_Model = model;
-        flat.m_ModelMatrix.translation = {0.5f, 0.0f, 0.0f};
-        flat.m_ModelMatrix.scale = {1.0f, 1.0f, 1.0f};
+        flat.m_ModelMatrix.translation = {0.5f, 0.5f, 0.0f};
+        flat.m_ModelMatrix.scale = {3.0f, 1.5f, 3.0f};
         m_GameObjects.emplace(flat.GetID(), std::move(flat));
 
         model = Model::CreateModelFromFile(m_Device, HOME_DIR "res/models/quad.obj");
-        auto quad = DivineGameObject::CreateGameObject();
-        quad.sp_Model = model;
-        quad.m_ModelMatrix.translation = {0.0f, 0.0f, 0.0f};
-        quad.m_ModelMatrix.scale = {3.0f, 1.0f, 3.0f};
-        m_GameObjects.emplace(quad.GetID(), std::move(quad));
+        auto floor = DivineGameObject::CreateGameObject();
+        floor.sp_Model = model;
+        floor.m_ModelMatrix.translation = {0.0f, 0.5f, 0.0f};
+        floor.m_ModelMatrix.scale = {3.0f, 1.0f, 3.0f};
+        m_GameObjects.emplace(floor.GetID(), std::move(floor));
+
+        std::vector<glm::vec3> lightColors = {
+            {1.f, 1.f, .1f},
+            {.1f, .1f, 1.f},
+            {.1f, 1.f, .1f},
+            {1.f, 1.f, .1f},
+            {.1f, 1.f, 1.f},
+            {1.f, 1.f, 1.f}};
+
+        for (int i = 0; i < lightColors.size(); ++i)
+        {
+            auto pointLight = DivineGameObject::MakePointLight(1.0f);
+            pointLight.m_Color = lightColors[i];
+            auto rotateLight = glm::rotate(glm::mat4(1.0f),
+                                           (i * glm::two_pi<float>() / lightColors.size()),
+                                           {0.f, -1.f, 0.f});
+            pointLight.m_ModelMatrix.translation = glm::vec3(rotateLight * glm::vec4(-1.f, -1.f, -1.f, 1.f));
+            m_GameObjects.emplace(pointLight.GetID(), std::move(pointLight));
+        }
     }
 
     void App::run()
@@ -74,16 +93,14 @@ namespace Divine
                                   globalSetLayout->GetDescriptorSetLayout()};
 
         PointLightSystem pointLightSystem{m_Device,
-                                  m_Renderer.GetSwapChainRenderPass(),
-                                  globalSetLayout->GetDescriptorSetLayout()};
+                                          m_Renderer.GetSwapChainRenderPass(),
+                                          globalSetLayout->GetDescriptorSetLayout()};
         Camera camera{};
         // camera.SetViewDirection({ 0.0f,0.0f,0.0f }, { 0.5f,00.1f,1.0f });
         // camera.SetViewTarget({-0.5f, -2.0f, -2.0f}, {0.0f, 0.0f, 2.5f});
 
         auto viewerObject = DivineGameObject::CreateGameObject();
-        viewerObject.m_ModelMatrix.translation.y = -1.0f;
         viewerObject.m_ModelMatrix.translation.z = -2.5f;
-        viewerObject.m_ModelMatrix.rotation.x = -0.2f;
         KeyboardController cameraController{};
 
         auto currentTime = std::chrono::high_resolution_clock::now();
@@ -118,6 +135,7 @@ namespace Divine
                 GlobalUBO ubo{};
                 ubo.Projection = camera.GetProjectionMat();
                 ubo.View = camera.GetViewMat();
+                pointLightSystem.Update(frameInfo, ubo);
                 ubos[frameIndex]->WriteToBuffer(reinterpret_cast<const void *>(&ubo));
                 ubos[frameIndex]->Flush();
 

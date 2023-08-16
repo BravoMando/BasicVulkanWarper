@@ -9,6 +9,21 @@ namespace Divine
         return DivineGameObject{currentID++};
     }
 
+    DivineGameObject DivineGameObject::MakePointLight(
+        float intensity,
+        float radius,
+        glm::vec3 color)
+    {
+        auto obj = DivineGameObject::CreateGameObject();
+        obj.m_Color = color;
+        obj.m_ModelMatrix.scale.x = radius;
+
+        obj.up_PointLight = std::make_unique<PointLightComponent>();
+        obj.up_PointLight->lightIntensity = intensity;
+
+        return obj;
+    }
+
     glm::mat4 TransformComponent::GetModelMat()
     {
         const float c3 = glm::cos(rotation.z);

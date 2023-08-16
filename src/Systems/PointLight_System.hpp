@@ -10,11 +10,12 @@
 
 namespace Divine
 {
-    // struct PushConstantData
-    // {
-    //     glm::mat4 modelMatrix{1.0f};
-    //     glm::mat4 normalMatrix{1.0f};
-    // };
+    struct PointLightPushData
+    {
+        glm::vec4 position{};
+        glm::vec4 color{};
+        float radius;
+    };
 
     class PointLightSystem
     {
@@ -24,6 +25,7 @@ namespace Divine
         PointLightSystem(const PointLightSystem &) = delete;
         PointLightSystem &operator=(const PointLightSystem &) = delete;
 
+        void Update(FrameInfo &frameInfo, GlobalUBO &ubo);
         void Render(FrameInfo &frameInfo);
 
     private:

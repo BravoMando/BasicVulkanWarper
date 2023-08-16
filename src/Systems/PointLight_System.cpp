@@ -20,10 +20,10 @@ namespace Divine
 
     void PointLightSystem::CreatePipelineLayout(VkDescriptorSetLayout globalSetLayout)
     {
-        // VkPushConstantRange pushConstantRange{};
-        // pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-        // pushConstantRange.offset = 0;
-        // pushConstantRange.size = sizeof(PushConstantData);
+        VkPushConstantRange pushConstantRange{};
+        pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+        pushConstantRange.offset = 0;
+        pushConstantRange.size = sizeof(PointLightPushData);
 
         std::vector<VkDescriptorSetLayout> descriptorSetLayouts = {globalSetLayout};
 
@@ -31,8 +31,8 @@ namespace Divine
         layoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
         layoutInfo.setLayoutCount = static_cast<uint32_t>(descriptorSetLayouts.size());
         layoutInfo.pSetLayouts = descriptorSetLayouts.data();
-        layoutInfo.pushConstantRangeCount = 0;
-        layoutInfo.pPushConstantRanges = nullptr;
+        layoutInfo.pushConstantRangeCount = 1;
+        layoutInfo.pPushConstantRanges = &pushConstantRange;
 
         if (vkCreatePipelineLayout(r_Device.GetDevice(), &layoutInfo, nullptr, &m_PipelineLayout) != VK_SUCCESS)
             throw std::runtime_error("Failed to create pipeline layout!");
@@ -57,6 +57,35 @@ namespace Divine
             configInfo);
     }
 
+    void PointLightSystem::Update(FrameInfo &frameInfo, GlobalUBO &ubo)
+    {
+        auto rotateLight = glm::rotate(glm::mat4(1.0f),
+                                       frameInfo.frameTime,
+                                       {0.f, -1.f, 0.f});
+
+        int lightIndex = 0;
+        for (auto &kv : frameInfo.gameObjects)
+        {
+            auto &obj = kv.second;
+            if (obj.up_PointLight == nullptr)
+                continue;
+
+            assert(lightIndex < MAX_LIGHTS &&
+                   "Point lights exceed maximum specified");
+
+            // update light position
+            obj.m_ModelMatrix.translation = glm::vec3(rotateLight * glm::vec4(obj.m_ModelMatrix.translation, 1.0f));
+
+            // copy light to ubo
+            ubo.PointLights[lightIndex].Position = glm::vec4(obj.m_ModelMatrix.translation, 1.0f);         // w will be ignored
+            ubo.PointLights[lightIndex].Color = glm::vec4(obj.m_Color, obj.up_PointLight->lightIntensity); // w is intensity
+
+            ++lightIndex;
+        }
+
+        ubo.numLights = lightIndex;
+    }
+
     void PointLightSystem::Render(FrameInfo &frameInfo)
     {
         up_Pipeline->Bind(frameInfo.commandBuffer);
@@ -71,7 +100,26 @@ namespace Divine
             0,
             nullptr);
 
-        vkCmdDraw(frameInfo.commandBuffer, 6, 1, 0, 0);
+        for (auto &kv : frameInfo.gameObjects)
+        {
+            auto &obj = kv.second;
+            if (obj.up_PointLight == nullptr)
+                continue;
+
+            PointLightPushData push{};
+            push.position = glm::vec4(obj.m_ModelMatrix.translation, 1.0f);
+            push.color = glm::vec4(obj.m_Color, obj.up_PointLight->lightIntensity);
+            push.radius = obj.m_ModelMatrix.scale.x;
+
+            vkCmdPushConstants(frameInfo.commandBuffer,
+                               m_PipelineLayout,
+                               VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+                               0,
+                               static_cast<uint32_t>(sizeof(PointLightPushData)),
+                               &push);
+
+            vkCmdDraw(frameInfo.commandBuffer, 6, 1, 0, 0);
+        }
     }
 
 }

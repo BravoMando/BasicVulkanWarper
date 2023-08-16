@@ -21,6 +21,11 @@ namespace Divine
         glm::mat3 GetNormalMat();
     };
 
+    struct PointLightComponent
+    {
+        float lightIntensity = 1.0f;
+    };
+
     class DivineGameObject
     {
     public:
@@ -36,6 +41,10 @@ namespace Divine
 
     public:
         static DivineGameObject CreateGameObject();
+        static DivineGameObject MakePointLight(
+            float intensity = 10.0f,
+            float radius = 0.1f,
+            glm::vec3 color = glm::vec3(1.0f));
 
         inline id_t GetID() const { return m_ID; }
 
@@ -44,9 +53,12 @@ namespace Divine
             : m_ID{objID} {}
 
     public:
-        std::shared_ptr<Model> sp_Model{};
         glm::vec3 m_Color{};
         TransformComponent m_ModelMatrix{};
+
+        // optional component
+        std::shared_ptr<Model> sp_Model = nullptr;
+        std::unique_ptr<PointLightComponent> up_PointLight = nullptr;
 
     private:
         id_t m_ID;

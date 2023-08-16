@@ -71,6 +71,8 @@ namespace Divine
         for (auto &kv : frameInfo.gameObjects)
         {
             auto &obj = kv.second;
+            if (obj.sp_Model == nullptr)
+                continue;
 
             PushConstantData push{};
             push.normalMatrix = obj.m_ModelMatrix.GetNormalMat();
