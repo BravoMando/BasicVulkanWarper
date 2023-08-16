@@ -1,8 +1,5 @@
 cmake_minimum_required(VERSION 3.20.0)
 
-#set(CMAKE_C_COMPILER clang.exe)
-#set(CMAKE_CXX_COMPILER clang++.exe)
-
 project(VKWARPER VERSION 1.0.0 LANGUAGES CXX)
 
 add_subdirectory(src)
