@@ -21,6 +21,7 @@ namespace Divine
     {
         glm::mat4 Projection{1.0f};
         glm::mat4 View{1.0f};
+        glm::mat4 InverseView{1.0f};
         glm::vec4 AmbientLightColor{1.0f, 1.0f, 1.0f, 0.02f}; // w is indtensity
         PointLight PointLights[MAX_LIGHTS];
         int numLights;

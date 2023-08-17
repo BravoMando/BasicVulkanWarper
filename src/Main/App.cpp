@@ -135,6 +135,7 @@ namespace Divine
                 GlobalUBO ubo{};
                 ubo.Projection = camera.GetProjectionMat();
                 ubo.View = camera.GetViewMat();
+                ubo.InverseView = camera.GetInverseViewMat();
                 pointLightSystem.Update(frameInfo, ubo);
                 ubos[frameIndex]->WriteToBuffer(reinterpret_cast<const void *>(&ubo));
                 ubos[frameIndex]->Flush();
