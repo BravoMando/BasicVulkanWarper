@@ -8,6 +8,10 @@ A simple basic Vulkan Warper learned from [Brendan Galea](https://github.com/blu
 
 *[BriefIntro](#brief-intro)
 
+*[Blending](#blending)
+
+*[Scene](#our-scene)
+
 
 
 ## Prerequired Tools
@@ -50,3 +54,6 @@ Not only the initial rendering matters, but also does the following rendering ma
 However when we move the camera in the oppsite position and direction to look, it turns out like this:
 ![Blending Bad](./res/diagrams/blending_bad.png)
 So we do need to take care of the render order, we need to caculate the distance between object and camera, and render from big to small(from back to front) for each frame.
+
+## Our scene
+![Basic](./res/diagrams/Basic.gif)
