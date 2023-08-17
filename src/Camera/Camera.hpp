@@ -13,6 +13,7 @@ namespace Divine
         inline const glm::mat4 &GetViewMat() const { return m_ViewMatrix; }
         inline const glm::mat4 &GetProjectionMat() const { return m_ProjectionMatrix; }
         inline const glm::mat4 &GetInverseViewMat() const { return m_InverseViewMatrix; }
+        inline const glm::vec3 GetPosition() const { return glm::vec3(m_InverseViewMatrix[3]); }
 
         void SetOrthographicProjection(float left, float right, float top, float bottom, float near, float far);
         void SetPerspctiveProjection(float fovy, float aspect, float near, float far);

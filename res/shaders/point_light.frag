@@ -33,5 +33,6 @@ void main()
     if(dis >= 1.0)
         discard;
 
-    outColor = vec4(0.2 + push.Color.xyz * push.Color.w, 1.0);
+    float k1 = 1 - dis;
+    outColor = vec4((push.Color.xyz * push.Color.w) * k1, k1);
 }

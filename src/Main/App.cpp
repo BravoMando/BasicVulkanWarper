@@ -142,8 +142,10 @@ namespace Divine
 
                 // render
                 m_Renderer.BeginSwapChainRenderPass(commandBuffer);
-                pointLightSystem.Render(frameInfo);
+
+                // render order here matters !!!!
                 renderSystem.RenderGameObjects(frameInfo);
+                pointLightSystem.Render(frameInfo);
                 m_Renderer.EndSwapChainRenderPass(commandBuffer);
                 m_Renderer.EndFrame();
             }

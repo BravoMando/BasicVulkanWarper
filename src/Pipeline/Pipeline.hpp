@@ -48,6 +48,7 @@ namespace Divine
         void Bind(VkCommandBuffer commandBuffer);
 
         static void DefaultPipelineConfigInfo(PipelineConfigInfo &configInfo);
+        static void EnableAlphaBlending(PipelineConfigInfo &configInfo);
 
     private:
         void CreateGraphicsPipeline(

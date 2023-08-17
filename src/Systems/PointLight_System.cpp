@@ -3,6 +3,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <array>
+#include <map>
 
 namespace Divine
 {
@@ -44,6 +45,7 @@ namespace Divine
                "Can't create pipeline without pipeline layout");
         PipelineConfigInfo configInfo{};
         Pipeline::DefaultPipelineConfigInfo(configInfo);
+        Pipeline::EnableAlphaBlending(configInfo);
         configInfo.renderPass = renderPass;
         configInfo.pipelineLayout = m_PipelineLayout;
 
@@ -88,6 +90,20 @@ namespace Divine
 
     void PointLightSystem::Render(FrameInfo &frameInfo)
     {
+        // sort lights
+        std::map<float, DivineGameObject::id_t> sorted; // by default compare by "less" of the "key"
+        for (auto &kv : frameInfo.gameObjects)
+        {
+            auto &obj = kv.second;
+            if (obj.up_PointLight == nullptr)
+                continue;
+
+            // calculate distence
+            auto offset = frameInfo.camera.GetPosition() - obj.m_ModelMatrix.translation;
+            float disSquared = glm::dot(offset, offset);
+            sorted[disSquared] = obj.GetID();
+        }
+
         up_Pipeline->Bind(frameInfo.commandBuffer);
 
         vkCmdBindDescriptorSets(
@@ -100,11 +116,11 @@ namespace Divine
             0,
             nullptr);
 
-        for (auto &kv : frameInfo.gameObjects)
+        // iterate in reverse order so that we render objects from back to front
+        for (auto it = sorted.rbegin(); it != sorted.rend(); ++it)
         {
-            auto &obj = kv.second;
-            if (obj.up_PointLight == nullptr)
-                continue;
+            // using ID to find game object since game object is NOT copyable
+            auto &obj = frameInfo.gameObjects.at(it->second);
 
             PointLightPushData push{};
             push.position = glm::vec4(obj.m_ModelMatrix.translation, 1.0f);
