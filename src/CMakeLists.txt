@@ -54,9 +54,9 @@ add_custom_target(BUILD_SHADER
 set(CMAKE_CXX_STANDARD 17)
 
 if(MSVC)
-    set(CMAKE_CXX_FLAGS "/Zi /W3")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zi /W3")
 else()
-    set(CMAKE_CXX_FLAGS "-g -Wall")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall")
 endif()
 
 add_executable(${PROJECT_NAME} ${SRC_LIST})
